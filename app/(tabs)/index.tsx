@@ -1,10 +1,20 @@
-import { Image, StyleSheet, Platform } from "react-native";
-import { HelloWave } from "@/components/HelloWave";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
+import { FlatList, SafeAreaView, StyleSheet, View } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { screenWidth } from "@/constants/Layout";
+import { RecallItem } from "@/components/RecallItem";
+
+export type RecallItemProps = {
+  item: {
+    brandName: string;
+    productDescription: string;
+    date: string;
+    recallReason: string;
+    link: string;
+  };
+};
 
 export default function HomeScreen() {
   const [recalls, setRecalls] = useState<[]>([]);
@@ -29,68 +39,64 @@ export default function HomeScreen() {
   }, []);
 
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-      headerImage={
-        <Image
-          source={require("@/assets/images/partial-react-logo.png")}
-          style={styles.reactLogo}
-        />
-      }
-    >
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
+    <ThemedView style={styles.titleContainer}>
+      <ThemedView style={styles.container}>
+        <SafeAreaView>
+          <ThemedText style={styles.logo}>Recall Buddy</ThemedText>
+          <ThemedView style={styles.content}></ThemedView>
+          <ThemedText type="subtitle">Recent Recalls</ThemedText>
+          <View style={styles.line} />
+          <ThemedView style={styles.recallsContainer}>
+            <FlatList
+              data={recalls}
+              renderItem={({ item }: RecallItemProps) => (
+                <>
+                  <RecallItem
+                    brandName={item.brandName}
+                    productDescription={item.productDescription}
+                    recallReason={item.recallReason}
+                    date={item.date}
+                    link={item.link}
+                    styles={styles.recallItem}
+                  />
+                  <View style={styles.line} />
+                </>
+              )}
+            />
+          </ThemedView>
+        </SafeAreaView>
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit{" "}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText>{" "}
-          to see changes. Press{" "}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: "cmd + d", android: "cmd + m" })}
-          </ThemedText>{" "}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this
-          starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{" "}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText>{" "}
-          to get a fresh <ThemedText type="defaultSemiBold">app</ThemedText>{" "}
-          directory. This will move the current{" "}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{" "}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
   titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
+    flex: 1,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  container: {
+    width: screenWidth * 0.9,
+    alignSelf: "center",
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
+  logo: {
+    marginTop: 24,
+  },
+  content: {
+    marginVertical: 10,
+  },
+  line: {
+    borderBottomColor: "gray",
+    borderBottomWidth: 0.5,
+    marginVertical: 10,
+    width: screenWidth,
+    alignSelf: "center",
+  },
+  recallsContainer: {
+    width: screenWidth,
+    alignSelf: "center",
+  },
+  recallItem: {
+    width: screenWidth * 0.9,
+    alignSelf: "center",
   },
 });
