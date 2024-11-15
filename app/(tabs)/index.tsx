@@ -5,6 +5,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { screenWidth } from "@/constants/Layout";
 import { RecallItem } from "@/components/RecallItem";
+import { useRouter } from "expo-router";
 
 export type RecallItemProps = {
   item: {
@@ -19,6 +20,8 @@ export type RecallItemProps = {
 export default function HomeScreen() {
   const [recalls, setRecalls] = useState<[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+
+  const router = useRouter();
 
   const fetchRecalls = async () => {
     try {
@@ -38,8 +41,12 @@ export default function HomeScreen() {
     fetchRecalls();
   }, []);
 
+  const handleOnPressRecallItem = () => {
+    router.push("/recall-item");
+  };
+
   return (
-    <ThemedView style={styles.titleContainer}>
+    <ThemedView style={styles.root}>
       <ThemedView style={styles.container}>
         <SafeAreaView>
           <ThemedText style={styles.logo}>Recall Buddy</ThemedText>
@@ -58,6 +65,7 @@ export default function HomeScreen() {
                     date={item.date}
                     link={item.link}
                     styles={styles.recallItem}
+                    handleOnPress={handleOnPressRecallItem}
                   />
                   <View style={styles.line} />
                 </>
@@ -71,7 +79,7 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  root: {
     flex: 1,
   },
   container: {
