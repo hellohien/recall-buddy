@@ -23,12 +23,16 @@ export default function HomeScreen() {
 
   const router = useRouter();
 
+  useEffect(() => {
+    fetchRecalls();
+  }, []);
+
   const fetchRecalls = async () => {
     try {
       const { data } = await axios.get(
         `${process.env.EXPO_PUBLIC_SERVER_URL}/api/recalls`
       );
-      console.log("recalls", JSON.stringify(data, null, 2));
+      // console.log("recalls", JSON.stringify(data, null, 2));
       setRecalls(data);
     } catch (error) {
       console.error("Error fetching recalls:", error);
@@ -37,11 +41,27 @@ export default function HomeScreen() {
     }
   };
 
-  useEffect(() => {
-    fetchRecalls();
-  }, []);
+  const extractArticle = async (url: string) => {
+    try {
+      let obj = {
+        url,
+      };
+      const { data } = await axios.post(
+        `${process.env.EXPO_PUBLIC_SERVER_URL}/api/article`,
+        obj
+      );
+      console.log("article", JSON.stringify(data, null, 2));
+      return data;
+    } catch (error) {
+      console.error("Error fetching recalls:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const handleOnPressRecallItem = () => {
+  const handleOnPressRecallItem = async (url: string) => {
+    const article = await extractArticle(url);
+    console.log("article here", article);
     router.push("/recall-item");
   };
 
@@ -65,7 +85,7 @@ export default function HomeScreen() {
                     date={item.date}
                     link={item.link}
                     styles={styles.recallItem}
-                    handleOnPress={handleOnPressRecallItem}
+                    handleOnPress={() => handleOnPressRecallItem(item.link)}
                   />
                   <View style={styles.line} />
                 </>

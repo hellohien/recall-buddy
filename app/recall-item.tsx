@@ -1,7 +1,7 @@
 // app/recall-item.tsx
 import BasicContainer from "@/components/BasicContainer";
 import { ThemedText } from "@/components/ThemedText";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
 import { TouchableOpacity } from "react-native";
 import { Header } from "react-native-elements";
