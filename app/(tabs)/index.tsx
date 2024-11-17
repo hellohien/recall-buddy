@@ -50,7 +50,7 @@ export default function HomeScreen() {
         `${process.env.EXPO_PUBLIC_SERVER_URL}/api/article`,
         obj
       );
-      console.log("article", JSON.stringify(data, null, 2));
+      // console.log("article", JSON.stringify(data, null, 2));
       return data;
     } catch (error) {
       console.error("Error fetching recalls:", error);
@@ -61,8 +61,8 @@ export default function HomeScreen() {
 
   const handleOnPressRecallItem = async (url: string) => {
     const article = await extractArticle(url);
-    console.log("article here", article);
-    router.push("/recall-item");
+    const articleString = encodeURIComponent(JSON.stringify(article));
+    router.push(`/recall-item?article=${articleString}`);
   };
 
   return (
