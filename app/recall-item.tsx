@@ -1,12 +1,12 @@
-// app/recall-item.tsx
 import BasicButton from "@/components/BasicButton";
 import BasicContainer from "@/components/BasicContainer";
+import BasicWebView from "@/components/BasicWebView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { screenWidth } from "@/constants/Layout";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Header } from "react-native-elements";
 
 export type recallDetailsProps = {
@@ -26,6 +26,7 @@ export default function RecallItemScreen() {
   const [recallDetails, setRecallDetails] = useState<recallDetailsProps | null>(
     null
   );
+  const [openArticle, setOpenArticle] = useState<boolean>(false);
 
   useEffect(() => {
     const parsedArticle = article
@@ -49,8 +50,16 @@ export default function RecallItemScreen() {
         }}
         backgroundColor="transparent"
       />
+
       {recallDetails && (
         <ThemedView>
+          {openArticle && (
+            <BasicWebView
+              uri={recallDetails.link}
+              setOpenArticle={setOpenArticle}
+            />
+          )}
+
           <ThemedView>
             {Object.keys(recallDetails).map((key, index) => {
               const typedKey = key as keyof recallDetailsProps;
@@ -61,7 +70,7 @@ export default function RecallItemScreen() {
                       <BasicButton
                         title="Link to Article"
                         accessibilityLabel="Link to Article"
-                        handleOnPress={() => {}}
+                        handleOnPress={() => setOpenArticle(!openArticle)}
                       />
                     </ThemedView>
                   ) : (
