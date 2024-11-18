@@ -84,10 +84,10 @@ export default function HomeScreen() {
                     recallReason={item.recallReason}
                     date={item.date}
                     link={item.link}
-                    styles={styles.recallItem}
+                    style={styles.recallItem}
                     handleOnPress={() => handleOnPressRecallItem(item.link)}
                   />
-                  <View style={styles.line} />
+                  <ThemedView style={styles.line} />
                 </>
               )}
             />

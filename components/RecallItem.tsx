@@ -1,5 +1,7 @@
-import { TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import { ThemedText } from "./ThemedText";
+import { ThemedView } from "./ThemedView";
+
 export type RecallItemProps = {
   brandName: string;
   productDescription: string;
@@ -7,7 +9,7 @@ export type RecallItemProps = {
   recallReason: string;
   link: string;
   handleOnPress: () => void;
-  styles: {};
+  style: {};
 };
 
 export function RecallItem({
@@ -16,14 +18,24 @@ export function RecallItem({
   date,
   recallReason,
   handleOnPress,
-  styles,
+  style,
 }: RecallItemProps) {
   return (
-    <TouchableOpacity onPress={handleOnPress} style={styles}>
-      <ThemedText>{brandName}</ThemedText>
-      <ThemedText>{productDescription}</ThemedText>
-      <ThemedText>{recallReason}</ThemedText>
-      <ThemedText>{date}</ThemedText>
+    <TouchableOpacity onPress={handleOnPress} style={style}>
+      <ThemedText style={styles.bold} numberOfLines={1}>
+        {brandName}
+      </ThemedText>
+      <ThemedText type="small" style={styles.bold}>
+        {productDescription}
+      </ThemedText>
+      <ThemedText type="small">{recallReason}</ThemedText>
+      <ThemedText type="small">{date}</ThemedText>
     </TouchableOpacity>
   );
 }
+
+const styles = StyleSheet.create({
+  bold: {
+    fontWeight: 700,
+  },
+});

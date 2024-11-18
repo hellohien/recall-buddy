@@ -1,7 +1,9 @@
 // app/recall-item.tsx
+import BasicButton from "@/components/BasicButton";
 import BasicContainer from "@/components/BasicContainer";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { screenWidth } from "@/constants/Layout";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
@@ -54,18 +56,34 @@ export default function RecallItemScreen() {
               const typedKey = key as keyof recallDetailsProps;
               return (
                 <ThemedView key={index}>
-                  <ThemedText type="small" style={styles.articleTitle}>
-                    {(typedKey === "announcementDate" && "Notice Date") ||
-                      (typedKey === "brandName" && "Brand") ||
-                      (typedKey === "productType" && "Type") ||
-                      (typedKey === "productDescription" && "Description") ||
-                      (typedKey === "link" && "Link To Article") ||
-                      (typedKey === "contactInfo" && "Contact Info") ||
-                      typedKey}
-                  </ThemedText>
-                  <ThemedText type="small" style={styles.articleDetail}>
-                    {recallDetails[typedKey]}
-                  </ThemedText>
+                  {typedKey === "link" ? (
+                    <ThemedView style={styles.linkToArticleButton}>
+                      <BasicButton
+                        title="Link to Article"
+                        accessibilityLabel="Link to Article"
+                        handleOnPress={() => {}}
+                      />
+                    </ThemedView>
+                  ) : (
+                    <ThemedView>
+                      <ThemedText type="small" style={styles.articleTitle}>
+                        {(typedKey === "announcementDate" && "Notice Date") ||
+                          (typedKey === "brandName" && "Brand") ||
+                          (typedKey === "productType" && "Type") ||
+                          (typedKey === "productDescription" &&
+                            "Description") ||
+                          (typedKey === "contactInfo" && "Contact Info") ||
+                          typedKey}
+                      </ThemedText>
+                      <ThemedText type="small">
+                        {recallDetails[typedKey] || "-"}
+                      </ThemedText>
+                    </ThemedView>
+                  )}
+                  {(typedKey === "contactInfo" ||
+                    typedKey === "productType") && (
+                    <ThemedView style={styles.line} />
+                  )}
                 </ThemedView>
               );
             })}
@@ -81,6 +99,17 @@ const styles = StyleSheet.create({
     fontWeight: 600,
     lineHeight: 16,
     textTransform: "capitalize",
+    paddingTop: 6,
+    paddingBottom: 2,
   },
-  articleDetail: { paddingBottom: 8 },
+  line: {
+    borderBottomColor: "gray",
+    borderBottomWidth: 0.5,
+    marginVertical: 14,
+    width: screenWidth * 0.9,
+    alignSelf: "center",
+  },
+  linkToArticleButton: {
+    marginTop: 10,
+  },
 });

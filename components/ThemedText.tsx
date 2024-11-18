@@ -7,6 +7,7 @@ export type ThemedTextProps = TextProps & {
   darkColor?: string;
   type?:
     | "default"
+    | "xsmall"
     | "small"
     | "title"
     | "defaultSemiBold"
@@ -27,6 +28,7 @@ export function ThemedText({
     <Text
       style={[
         { color },
+        type === "xsmall" ? styles.xsmall : undefined,
         type === "small" ? styles.small : undefined,
         type === "default" ? styles.default : undefined,
         type === "title" ? styles.title : undefined,
@@ -43,10 +45,15 @@ export function ThemedText({
 const styles = StyleSheet.create({
   default: {
     fontSize: 16,
+    lineHeight: 24,
+  },
+  xsmall: {
+    fontSize: 12,
+    lineHeight: 20,
   },
   small: {
     fontSize: 14,
-    lineHeight: 24,
+    lineHeight: 22,
   },
   defaultSemiBold: {
     fontSize: 16,
