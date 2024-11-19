@@ -6,7 +6,7 @@ The frontend for the _Recall Buddy_ mobile app. Built with Expo and React Native
 
 - Displays detailed recall information for pet food products.
 - Allows users to search and browse recent recalls.
-- Receive notifications for new pet food recalls to stay updated on safety alerts.
+- Receive notifications for new pet food recalls.
 
 ## Get started
 

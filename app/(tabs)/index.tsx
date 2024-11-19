@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { screenWidth } from "@/constants/Layout";
 import { RecallItem } from "@/components/RecallItem";
 import { useRouter } from "expo-router";
+import { BasicInput } from "@/components/BasicInput";
 
 export type RecallItemProps = {
   item: {
@@ -20,6 +21,7 @@ export type RecallItemProps = {
 export default function HomeScreen() {
   const [recalls, setRecalls] = useState<[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [searchValue, setSearchValue] = useState<string>("");
 
   const router = useRouter();
 
@@ -70,6 +72,12 @@ export default function HomeScreen() {
       <ThemedView style={styles.container}>
         <SafeAreaView>
           <ThemedText style={styles.logo}>Recall Buddy</ThemedText>
+          <BasicInput
+            style={styles.searchInput}
+            value={searchValue}
+            setValue={setSearchValue}
+            placeholder="Search..."
+          />
           <ThemedView style={styles.content}></ThemedView>
           <ThemedText type="subtitle">Recent Recalls</ThemedText>
           <View style={styles.line} />
@@ -126,5 +134,13 @@ const styles = StyleSheet.create({
   recallItem: {
     width: screenWidth * 0.9,
     alignSelf: "center",
+  },
+  searchInput: {
+    width: "100%",
+    height: 32,
+    padding: 10,
+    marginTop: 10,
+    borderRadius: 6,
+    backgroundColor: "#f5f5f5",
   },
 });
