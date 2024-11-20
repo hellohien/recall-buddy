@@ -15,13 +15,16 @@ export type RecallItemProps = {
     date: string;
     recallReason: string;
     link: string;
+    brandName2?: string;
+    productDescription2?: string;
   };
 };
 
 export default function HomeScreen() {
-  const [recalls, setRecalls] = useState<[]>([]);
+  const [recalls, setRecalls] = useState<RecallItemProps["item"][]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchValue, setSearchValue] = useState<string>("");
+  const [recalls2, setRecalls2] = useState<RecallItemProps["item"][]>([]);
 
   const router = useRouter();
 
@@ -29,13 +32,30 @@ export default function HomeScreen() {
     fetchRecalls();
   }, []);
 
+  useEffect(() => {
+    const arr = recalls.map((ele) => {
+      if (typeof ele === "object" && ele !== null) {
+        return {
+          ...ele,
+          brandName2: ele.brandName?.toLowerCase(),
+          productDescription2: ele.productDescription?.toLowerCase(),
+        };
+      }
+      return ele;
+    });
+    setRecalls2(arr || []);
+  }, [recalls]);
+
   const fetchRecalls = async () => {
     try {
       const { data } = await axios.get(
         `${process.env.EXPO_PUBLIC_SERVER_URL}/api/recalls`
       );
-      // console.log("recalls", JSON.stringify(data, null, 2));
-      setRecalls(data);
+      if (Array.isArray(data)) {
+        setRecalls(data);
+      } else {
+        console.error("Invalid data format received:", data);
+      }
     } catch (error) {
       console.error("Error fetching recalls:", error);
     } finally {
@@ -45,17 +65,13 @@ export default function HomeScreen() {
 
   const extractArticle = async (url: string) => {
     try {
-      let obj = {
-        url,
-      };
       const { data } = await axios.post(
         `${process.env.EXPO_PUBLIC_SERVER_URL}/api/article`,
-        obj
+        { url }
       );
-      // console.log("article", JSON.stringify(data, null, 2));
       return data;
     } catch (error) {
-      console.error("Error fetching recalls:", error);
+      console.error("Error fetching article:", error);
     } finally {
       setLoading(false);
     }
@@ -67,6 +83,53 @@ export default function HomeScreen() {
     router.push(`/recall-item?article=${articleString}`);
   };
 
+  const renderItem3 = ({ item }: { item: RecallItemProps["item"] }) => {
+    if (!searchValue || searchValue.trim().length < 1) {
+      return (
+        <ThemedView>
+          <ThemedText>{item.brandName}</ThemedText>
+          <ThemedText numberOfLines={4}>{item.productDescription}</ThemedText>
+        </ThemedView>
+      );
+    }
+
+    const searchValueLower = searchValue.toLowerCase();
+    const indx = item.brandName2?.indexOf(searchValueLower) ?? -1;
+    const indx2 = item.productDescription2?.indexOf(searchValueLower) ?? -1;
+    const length = searchValue.length;
+
+    if (indx < 0 && indx2 < 0) return null;
+
+    return (
+      <View>
+        {indx < 0 ? (
+          <ThemedText>{item.brandName}</ThemedText>
+        ) : (
+          <ThemedText>
+            {item.brandName.substr(0, indx)}
+            <ThemedText style={{ backgroundColor: "#FFC04C" }}>
+              {item.brandName.substr(indx, length)}
+            </ThemedText>
+            <ThemedText>{item.brandName.substr(indx + length)}</ThemedText>
+          </ThemedText>
+        )}
+        {indx2 < 0 ? (
+          <ThemedText numberOfLines={4}>{item.productDescription}</ThemedText>
+        ) : (
+          <ThemedText numberOfLines={4}>
+            {item.productDescription.substr(0, indx2)}
+            <ThemedText style={{ backgroundColor: "#FFC04C" }}>
+              {item.productDescription.substr(indx2, length)}
+            </ThemedText>
+            <ThemedText>
+              {item.productDescription.substr(indx2 + length)}
+            </ThemedText>
+          </ThemedText>
+        )}
+      </View>
+    );
+  };
+
   return (
     <ThemedView style={styles.root}>
       <ThemedView style={styles.container}>
@@ -75,29 +138,17 @@ export default function HomeScreen() {
           <BasicInput
             style={styles.searchInput}
             value={searchValue}
-            setValue={setSearchValue}
             placeholder="Search..."
+            onChangeText={(txt) => setSearchValue(txt)}
           />
           <ThemedView style={styles.content}></ThemedView>
           <ThemedText type="subtitle">Recent Recalls</ThemedText>
           <View style={styles.line} />
           <ThemedView style={styles.recallsContainer}>
             <FlatList
-              data={recalls}
-              renderItem={({ item }: RecallItemProps) => (
-                <>
-                  <RecallItem
-                    brandName={item.brandName}
-                    productDescription={item.productDescription}
-                    recallReason={item.recallReason}
-                    date={item.date}
-                    link={item.link}
-                    style={styles.recallItem}
-                    handleOnPress={() => handleOnPressRecallItem(item.link)}
-                  />
-                  <ThemedView style={styles.line} />
-                </>
-              )}
+              data={recalls2}
+              renderItem={renderItem3}
+              keyExtractor={(item, index) => item.link || index.toString()}
             />
           </ThemedView>
         </SafeAreaView>
@@ -129,10 +180,6 @@ const styles = StyleSheet.create({
   },
   recallsContainer: {
     width: screenWidth,
-    alignSelf: "center",
-  },
-  recallItem: {
-    width: screenWidth * 0.9,
     alignSelf: "center",
   },
   searchInput: {
