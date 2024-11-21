@@ -8,23 +8,11 @@ import { RecallItem } from "@/components/RecallItem";
 import { useRouter } from "expo-router";
 import { BasicInput } from "@/components/BasicInput";
 
-export type RecallItemProps = {
-  item: {
-    brandName: string;
-    productDescription: string;
-    date: string;
-    recallReason: string;
-    link: string;
-    brandName2?: string;
-    productDescription2?: string;
-  };
-};
-
 export default function HomeScreen() {
-  const [recalls, setRecalls] = useState<RecallItemProps["item"][]>([]);
+  const [recalls, setRecalls] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchValue, setSearchValue] = useState<string>("");
-  const [recalls2, setRecalls2] = useState<RecallItemProps["item"][]>([]);
+  const [recalls2, setRecalls2] = useState<any[]>([]);
 
   const router = useRouter();
 
@@ -33,17 +21,12 @@ export default function HomeScreen() {
   }, []);
 
   useEffect(() => {
-    const arr = recalls.map((ele) => {
-      if (typeof ele === "object" && ele !== null) {
-        return {
-          ...ele,
-          brandName2: ele.brandName?.toLowerCase(),
-          productDescription2: ele.productDescription?.toLowerCase(),
-        };
-      }
-      return ele;
-    });
-    setRecalls2(arr || []);
+    const formattedRecalls = recalls.map((item) => ({
+      ...item,
+      brandName2: item.brandName?.toLowerCase(),
+      productDescription2: item.productDescription?.toLowerCase(),
+    }));
+    setRecalls2(formattedRecalls);
   }, [recalls]);
 
   const fetchRecalls = async () => {
@@ -51,11 +34,7 @@ export default function HomeScreen() {
       const { data } = await axios.get(
         `${process.env.EXPO_PUBLIC_SERVER_URL}/api/recalls`
       );
-      if (Array.isArray(data)) {
-        setRecalls(data);
-      } else {
-        console.error("Invalid data format received:", data);
-      }
+      setRecalls(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Error fetching recalls:", error);
     } finally {
@@ -72,8 +51,6 @@ export default function HomeScreen() {
       return data;
     } catch (error) {
       console.error("Error fetching article:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -83,50 +60,60 @@ export default function HomeScreen() {
     router.push(`/recall-item?article=${articleString}`);
   };
 
-  const renderItem3 = ({ item }: { item: RecallItemProps["item"] }) => {
-    if (!searchValue || searchValue.trim().length < 1) {
+  const renderItem3 = ({ item }: { item: any }) => {
+    if (searchValue?.trim()) {
+      const searchValueLower = searchValue.toLowerCase();
+      const brandIndex = item.brandName2?.indexOf(searchValueLower) ?? -1;
+      const descriptionIndex =
+        item.productDescription2?.indexOf(searchValueLower) ?? -1;
+
+      if (brandIndex < 0 && descriptionIndex < 0) return null;
+
+      const highlightText = (text: string, index: number) => {
+        if (index < 0) return text;
+        return (
+          <>
+            {text.substring(0, index)}
+            <ThemedText style={{ backgroundColor: "#FFC04C" }}>
+              {text.substring(index, index + searchValue.length)}
+            </ThemedText>
+            {text.substring(index + searchValue.length)}
+          </>
+        );
+      };
+
       return (
-        <ThemedView>
-          <ThemedText>{item.brandName}</ThemedText>
-          <ThemedText numberOfLines={4}>{item.productDescription}</ThemedText>
-        </ThemedView>
+        <>
+          <RecallItem
+            brandName={highlightText(item.brandName, brandIndex)}
+            productDescription={highlightText(
+              item.productDescription,
+              descriptionIndex
+            )}
+            recallReason={item.recallReason}
+            date={item.date}
+            link={item.link}
+            style={styles.recallItem}
+            handleOnPress={() => handleOnPressRecallItem(item.link)}
+          />
+          <View style={styles.line} />
+        </>
       );
     }
 
-    const searchValueLower = searchValue.toLowerCase();
-    const indx = item.brandName2?.indexOf(searchValueLower) ?? -1;
-    const indx2 = item.productDescription2?.indexOf(searchValueLower) ?? -1;
-    const length = searchValue.length;
-
-    if (indx < 0 && indx2 < 0) return null;
-
     return (
-      <View>
-        {indx < 0 ? (
-          <ThemedText>{item.brandName}</ThemedText>
-        ) : (
-          <ThemedText>
-            {item.brandName.substr(0, indx)}
-            <ThemedText style={{ backgroundColor: "#FFC04C" }}>
-              {item.brandName.substr(indx, length)}
-            </ThemedText>
-            <ThemedText>{item.brandName.substr(indx + length)}</ThemedText>
-          </ThemedText>
-        )}
-        {indx2 < 0 ? (
-          <ThemedText numberOfLines={4}>{item.productDescription}</ThemedText>
-        ) : (
-          <ThemedText numberOfLines={4}>
-            {item.productDescription.substr(0, indx2)}
-            <ThemedText style={{ backgroundColor: "#FFC04C" }}>
-              {item.productDescription.substr(indx2, length)}
-            </ThemedText>
-            <ThemedText>
-              {item.productDescription.substr(indx2 + length)}
-            </ThemedText>
-          </ThemedText>
-        )}
-      </View>
+      <>
+        <RecallItem
+          brandName={item.brandName}
+          productDescription={item.productDescription}
+          recallReason={item.recallReason}
+          date={item.date}
+          link={item.link}
+          style={styles.recallItem}
+          handleOnPress={() => handleOnPressRecallItem(item.link)}
+        />
+        <View style={styles.line} />
+      </>
     );
   };
 
@@ -149,6 +136,7 @@ export default function HomeScreen() {
               data={recalls2}
               renderItem={renderItem3}
               keyExtractor={(item, index) => item.link || index.toString()}
+              ListEmptyComponent={<ThemedText>No recalls found.</ThemedText>}
             />
           </ThemedView>
         </SafeAreaView>
@@ -189,5 +177,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderRadius: 6,
     backgroundColor: "#f5f5f5",
+  },
+  recallItem: {
+    width: screenWidth * 0.9,
+    alignSelf: "center",
   },
 });
