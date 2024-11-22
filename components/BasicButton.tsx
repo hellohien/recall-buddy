@@ -1,5 +1,6 @@
 import { Button, StyleSheet } from "react-native";
 import { ThemedView } from "./ThemedView";
+import { Colors } from "@/constants/Colors";
 
 export type BasicButtonProps = {
   title: string;
@@ -28,7 +29,7 @@ export default function BasicButton({
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: "#CD4631",
+    backgroundColor: Colors["light"].button,
     borderRadius: 6,
   },
 });

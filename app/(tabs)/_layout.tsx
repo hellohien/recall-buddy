@@ -28,12 +28,24 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="submit"
+        options={{
+          title: "Submit",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "newspaper" : "newspaper-outline"}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="settings"
         options={{
           title: "Settings",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={focused ? "code-slash" : "code-slash-outline"}
+              name={focused ? "settings" : "settings-outline"}
               color={color}
             />
           ),

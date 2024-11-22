@@ -13,7 +13,7 @@ export default function settingsScreen() {
   return (
     <BasicContainer>
       <ThemedView style={styles.row}>
-        <ThemedText style={styles.general}>General</ThemedText>
+        <ThemedText style={styles.settingsTitle}>General</ThemedText>
       </ThemedView>
 
       <ThemedView style={[styles.notifContainer, styles.row]}>
@@ -26,6 +26,15 @@ export default function settingsScreen() {
           value={isEnabled}
           style={styles.switch}
         />
+      </ThemedView>
+      <View style={styles.line} />
+
+      <ThemedView style={styles.row}>
+        <ThemedText style={styles.settingsTitle}>More</ThemedText>
+      </ThemedView>
+
+      <ThemedView style={styles.row}>
+        <ThemedText>Terms</ThemedText>
       </ThemedView>
       <View style={styles.line} />
     </BasicContainer>
@@ -44,7 +53,7 @@ const styles = StyleSheet.create({
   row: {
     marginTop: 10,
   },
-  general: {
+  settingsTitle: {
     marginVertical: 10,
     fontWeight: 600,
   },
