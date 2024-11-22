@@ -7,6 +7,7 @@ import { screenWidth } from "@/constants/Layout";
 import { RecallItem } from "@/components/RecallItem";
 import { useRouter } from "expo-router";
 import { BasicInput } from "@/components/BasicInput";
+import BasicContainer from "@/components/BasicContainer";
 
 export default function HomeScreen() {
   const [recalls, setRecalls] = useState<any[]>([]);
@@ -60,7 +61,7 @@ export default function HomeScreen() {
     router.push(`/recall-item?article=${articleString}`);
   };
 
-  const renderItem3 = ({ item }: { item: any }) => {
+  const renderItem = ({ item }: { item: any }) => {
     if (searchValue?.trim()) {
       const searchValueLower = searchValue.toLowerCase();
       const brandIndex = item.brandName2?.indexOf(searchValueLower) ?? -1;
@@ -118,30 +119,26 @@ export default function HomeScreen() {
   };
 
   return (
-    <ThemedView style={styles.root}>
-      <ThemedView style={styles.container}>
-        <SafeAreaView>
-          <ThemedText style={styles.logo}>Recall Buddy</ThemedText>
-          <BasicInput
-            style={styles.searchInput}
-            value={searchValue}
-            placeholder="Search..."
-            onChangeText={(txt) => setSearchValue(txt)}
-          />
-          <ThemedView style={styles.content}></ThemedView>
-          <ThemedText type="subtitle">Recent Recalls</ThemedText>
-          <View style={styles.line} />
-          <ThemedView style={styles.recallsContainer}>
-            <FlatList
-              data={recalls2}
-              renderItem={renderItem3}
-              keyExtractor={(item, index) => item.link || index.toString()}
-              ListEmptyComponent={<ThemedText>No recalls found.</ThemedText>}
-            />
-          </ThemedView>
-        </SafeAreaView>
+    <BasicContainer>
+      <ThemedText style={styles.logo}>Recall Buddy</ThemedText>
+      <BasicInput
+        style={styles.searchInput}
+        value={searchValue}
+        placeholder="Search..."
+        onChangeText={(txt) => setSearchValue(txt)}
+      />
+      <ThemedView style={styles.content}></ThemedView>
+      <ThemedText type="subtitle">Recent Recalls</ThemedText>
+      <View style={styles.line} />
+      <ThemedView style={styles.recallsContainer}>
+        <FlatList
+          data={recalls2}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => item.link || index.toString()}
+          ListEmptyComponent={<ThemedText>No recalls found.</ThemedText>}
+        />
       </ThemedView>
-    </ThemedView>
+    </BasicContainer>
   );
 }
 

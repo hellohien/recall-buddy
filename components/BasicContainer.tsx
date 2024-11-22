@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { SafeAreaView, StyleSheet } from "react-native";
 import { ThemedView } from "./ThemedView";
 import { screenWidth } from "@/constants/Layout";
 
@@ -9,7 +9,9 @@ interface BasicContainerProps {
 export default function BasicContainer({ children }: BasicContainerProps) {
   return (
     <ThemedView style={styles.root}>
-      <ThemedView style={styles.container}>{children}</ThemedView>
+      <ThemedView style={styles.container}>
+        <SafeAreaView>{children}</SafeAreaView>
+      </ThemedView>
     </ThemedView>
   );
 }
